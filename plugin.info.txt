@@ -1,0 +1,8 @@
+base    searchbox
+author  Symon Bent
+email   hendrybadao@gmail.com
+date    2011-05-02
+name    Namespaced Search Box
+desc    Put a search box on any wiki page and search within any specified namespace
+url     http://www.dokuwiki.org/plugin:searchbox
+

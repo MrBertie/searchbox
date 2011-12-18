@@ -1,0 +1,41 @@
+div.dokuwiki .searchbox {
+    position: relative;
+    font-size:110%;
+    background:__background_alt__;
+    width:96%;
+    padding:8px 8px 7px 9px;
+    margin:0 auto 3px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+div.dokuwiki .searchbox .left,
+div.dokuwiki .searchbox .right {
+    height:32px;
+}
+div.dokuwiki .searchbox .left {
+    width:auto;
+    margin-right:120px;
+}
+div.dokuwiki .searchbox .right {
+    float:right;
+}
+div.dokuwiki .searchbox .edit {
+    height:24px;
+    font-size: 95%;
+    width:100%;
+	padding:2px 5px;
+}
+div.dokuwiki .searchbox .button {
+    margin:0 3px 0 4px;
+    float:right;
+}
+div.dokuwiki .searchbox a.update {
+    position: absolute;
+    top: -20px;
+    left: 10px;
+    color: #ABADB3;
+    font-size: 75%;
+    background: none;
+    border: 0;
+}
