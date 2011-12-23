@@ -23,10 +23,10 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
         $opt = array();
 
         // default options
-        $opt['ns'] = $INFO['namespace'];   // this namespace (default)
-        $opt['button'] = 'page';           // button display name
+        $opt['ns'] = $INFO['namespace'];       // this namespace (default)
+        $opt['button'] = $lang['btn_search'];  // button display name (default = Dokuwiki's)
 
-		$match = substr($match, 10, -2);
+		$match = substr($match, 12, -2);
 
         $args = explode(';', $match);
         foreach ($args as $arg) {
@@ -42,28 +42,27 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
 		return $opt;
     }
 
-
 	function render($mode, &$renderer, $opt) {
-    	global $lang;
 
 		$renderer->info['cache'] = false;
+        $placeholder = sprintf($this->getLang('placeholder'), $opt['ns']);
 
 		if ($mode == 'xhtml') {
-            $submit =  "set_newpage('" . $opt['ns'] . ":', '" . $opt['button'] . "'); return true;";
-            $show_ns = ($opt['show_ns'] === true) ? '<div class="namespace">' . $opt['ns'] . ' :</div>' : '';
 		    $renderer->doc .=
-                '<form name="editform" id="editform_' . $opt['button'] . '" method="post" action="" accept-charset="'.$lang['encoding'].'" onsubmit="' . $submit . '">' .
-                    '<div class="newpage" id="newpage">' . $show_ns .
-                      '<div class="right">' .
-                          '<input class="button" type="submit" value="' . 'New ' . $opt['button'] . '" tabindex="3" ' .
-                            'title="' . $this->getLang('searchbox_tip') . ' «' . $opt['ns'] . '»"/>' .
-                      '</div>' .
-                      '<div class="left">' .
-                          '<input class="edit" type="text" name="title" id="newpage_title_' . $opt['button'] . '" maxlength="255"' .
-                            'tabindex="2" value="' . $opt['date_ns'] . '"/>' .
-                      '</div>' .
+                '<div class="searchbox" id="plugin__searchbox">' .
+                    '<div class="search">' .
+                        '<a class="update" id="plugin__searchbox_update" title="' . $this->getLang('update_tip') . '">'
+                        . $this->getLang('update') . '</a>' .
+                        '<input id="plugin__searchbox_qry" class="query" type="text"  maxlength="255 "' .
+                        'tabindex="2" placeholder="' . $placeholder . '"/>' .
+                        '<input id="plugin__searchbox_btn" class="button" type="button" tabindex="3" ' .
+                        'value="' . $opt['button'] . '"/>' .
+                        '<a class="clear" id="plugin__searchbox_clear">' . $this->getLang('clear') . '</a>' .
                     '</div>' .
-                '</form>';
+                    '<div class="updating" id="plugin__searchbox_msg"></div>' .
+                    '<div class="result" id="plugin__searchbox_result"></div>' .
+                    '<input id="plugin__searchbox_ns" type="hidden" value="' . $opt['ns'] . '"/>' .
+                '</div>';
 			return true;
 		}
 		return false;

@@ -6,7 +6,7 @@
  *     Rewrite using jQuery and revealing module pattern
  */
 
-var plugin_nsindex = ( function() {
+var plugin_searchbox = ( function() {
 
     // public methods/properties
     var pub = {};
@@ -18,137 +18,148 @@ var plugin_nsindex = ( function() {
         done =  1,
         count = 0,
         output = null,
+        ns = null,
         lang = null;
-        ns = '';
 
     /**
      * initialize everything
      */
-    pub.init = function(cur_ns) {
-        output = $('plugin__searchbox');
+    pub.init = function() {
+        output = jQuery('#plugin__searchbox_msg');
         if( ! output) return;
 
-        ns = cur_ns;
         url = DOKU_BASE + 'lib/plugins/searchbox/ajax.php';
         lang = LANG.plugins.searchbox;
+        ns = encodeURI(jQuery('#plugin__searchbox_ns').val());
 
         // init interface
-        jQuery('.plugin__searchbox_update').click(update);
-        jQuery('.plugin__searchbox_search').click(search);
+        jQuery('#plugin__searchbox_update').click(pub.update);
+        jQuery('#plugin__searchbox_clear').click(function() {
+            jQuery('#plugin__searchbox_result').html("");
+        });
+        jQuery('#plugin__searchbox_btn').click(search);
+        jQuery('#plugin__searchbox_qry').keyup(function(event) {
+            if (event.keyCode == 13) {
+                search();
+            }
+        });
+    };
+
+    var search = function() {
+        var query = jQuery('#plugin__searchbox_qry').val();
+        jQuery.post(url, 'call=search&query=' + encodeURI(query) + '&ns=' + ns, function(response) {
+            jQuery('#plugin__searchbox_result').html(response);
+        });
     };
 
     /**
      * Gives textual feedback
      */
     var status = function(text) {
-        output.innerHTML = text;
-    };
-
-    /**
-     * Callback.
-     * Executed when the index was cleared.
-     * Starts the indexing
-     */
-    var cb_cleared = function() {
-        var ok = this.response;
-        if (ok == 1) {
-            // start indexing
-            window.setTimeout(pub.index,1000);
-        } else {
-            status(ok);
-            // retry
-            window.setTimeout(pub.clear,5000);
-        }
-    };
-
-    /**
-     * Callback.
-     * Executed when the list of pages came back.
-     * Starts the index clearing
-     */
-    var cb_pages = function() {
-        var data = this.response;
-        pages = data.split("\n");
-        count = pages.length;
-        status(lang.pages.replace(/%d/, pages.length));
-
-        // move the first page from the queue
-        page = pages.shift();
-
-        // start index cleaning
-        window.setTimeout(pub.clear,1000);
-    };
-
-    /**
-     * Callback.
-     * Returned after indexing one page
-     * Calls the next index run.
-     */
-    var cb_index = function() {
-        var ok = this.response;
-        var wait = 500;
-        if (ok == 1) {
-            // next page from queue
-            page = pages.shift();
-            done++;
-        } else {
-            // something went wrong, show message
-            status(ok);
-            wait = 5000;
-        }
-        // next index run
-        window.setTimeout(pub.index, wait);
+        output.html('<p>' + text + '</p>');
     };
 
     /**
      * Starts the indexing of a page.
      */
-    pub.index = function() {
+    var index = function() {
         if (page) {
-            status(lang.indexing + ' <b>' + page + '</b> (' + done + '/' + count + ')');
-            jQuery.post(url, 'call=indexpage&page=' + encodeURI(page), cb_index);
+            jQuery.post(url, 'call=indexpage&page=' + encodeURI(page), function(response) {
+                var wait = 250;
+                var ignored = '';
+                console.log(response);
+                if (response == 0) {
+                    // something went wrong, skip
+                    ignored = '----' + lang.notindexed;
+                }
+                // next page from queue
+                page = pages.shift();
+                done++;
+
+                status(lang.indexing + '(' + done + '/' + count + ') <b>' + page + '</b>' + ignored);
+                // next index run
+                window.setTimeout(index, wait);
+            });
         } else {
-            // we're done
-            throbber_off();
-            status(lang.done);
+            finished();
         }
     };
 
+    var finished = function() {
+        // we're done
+        throbber_off();
+        status(lang.done);
+        window.setTimeout(function() {
+            status('');
+        }, 3000);
+    };
     /**
      * Cleans the index
      */
-    pub.clear = function() {
+    var clear = function() {
         status(lang.clearing);
-        jQuery.post(url, 'call=clearindex', cb_cleared);
+        jQuery.post(url, 'call=clearindex', function(response) {
+            if (response != 1) {
+                status(ok);
+                // retry
+                window.setTimeout(clear,5000);
+            }
+        });
     };
 
+    pub.rebuild = function() {
+        pub.update(true);
+    };
     /**
-     * Starts the whole index rebuild process
+     * Starts the index update
      */
-    pub.go = function() {
+    pub.update = function(rebuild) {
+        rebuild = rebuild || false;
         throbber_on();
         status(lang.finding);
-        jQuery.post(url, 'call=pagelist&ns=' + encodeURI(ns), cb_pages);
+        jQuery.post(url, 'call=pagelist&ns=' + ns, function(response) {
+            if (response != 1) {
+                pages = response.split("\n");
+                count = pages.length;
+                status(lang.pages.replace(/%d/, pages.length));
+
+                // move the first page from the queue
+                page = pages.shift();
+
+                if (rebuild === true) clear();
+
+                // start indexing
+                window.setTimeout(index,1000);
+            } else {
+                finished();
+            }
+        });
     };
 
     /**
      * add a throbber image
      */
     var throbber_on = function() {
-        output.style['background-image'] = "url('" + DOKU_BASE + 'lib/images/throbber.gif' + "')";
-        output.style['background-repeat'] = 'no-repeat';
+        output
+            .css('background-image', "url('" + DOKU_BASE + 'lib/images/throbber.gif' + "')")
+            .css('background-repeat', 'no-repeat')
+            .css('background-position', '5px 4px')
+            .css({'border-width': '1px', 'padding': '3px'});
     };
 
     /**
      * Stop the throbber
      */
     var throbber_off = function() {
-        output.style['background-image'] = 'none';
+        output
+            .css('background-image', 'none')
+            .css({'border-width': '0px', 'padding': '0px'});
     };
 
+    // return only public methods/properties
     return pub;
 })();
 
-jQuery(function(){
-    plugin_searchindex.init(JSINFO.namespace);
+jQuery(function() {
+    plugin_searchbox.init();
 });

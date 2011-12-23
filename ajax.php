@@ -20,6 +20,8 @@ require_once(DOKU_INC.'inc/pageutils.php');
 require_once(DOKU_INC.'inc/auth.php');
 require_once(DOKU_INC.'inc/search.php');
 require_once(DOKU_INC.'inc/indexer.php');
+require_once(DOKU_INC . 'inc/html.php');
+require_once(DOKU_INC . 'inc/logger.php');
 //close sesseion
 session_write_close();
 
@@ -39,7 +41,20 @@ if (function_exists($call)) {
 }
 
 /**
- * Searches for pages within a given namespace only
+ * Searches a given query within the specified query
+ */
+function ajax_search() {
+
+   if ( ! $_POST['query']) {
+        print 1;
+        exit;
+    }
+
+    _html_search($_POST['query'], $_POST['ns']);
+}
+
+/**
+ * Lists all page names within a given namespace only
  *
  * @author Andreas Gohr <andi@splitbrain.org>
  * @author Symon Bent <hendrybadao@gmail.com>
@@ -52,13 +67,11 @@ function ajax_pagelist() {
         exit;
     }
     $data = array();
-    search($data, $conf['datadir'] . ':' . $_POST['ns'], 'search_allpages', array());
+    search($data, $conf['datadir'], 'search_allpages', array(), $_POST['ns']);
 
-    ob_start();
     foreach($data as $val) {
         print $val['id'] . "\n";
     }
-    ob_end_flush();
 }
 
 /**
@@ -116,12 +129,72 @@ function ajax_indexpage() {
     // keep running
     @ignore_user_abort(true);
 
-    // no index lock checking, this is done in idx_addPAge
+    // no index lock checking, this is now done in idx_addPAge
     // this plugin requires at least Augua release anyway!
 
-    // index the page if it has changed
-    idx_addPage($_POST['page'], false, false);
+    // index the page only if it has changed
+    $success = idx_addPage($_POST['page'], false, false);
 
-    print 1;
+    print ($success !== false) ? 1 : 0;
+}
+
+function _html_search($query, $ns) {
+    global $lang;
+
+    //do quick pagesearch
+    $data = array();
+    if ( ! empty($ns)) {
+        $query = $query . ' @' . $ns;
+    }
+
+    ob_start();
+
+    $data = ft_pageLookup($query, true, useHeading('navigation'));
+    if (count($data)) {
+        print '<div class="search_quickresult">';
+        print '<h3>' . $lang['quickhits'] . ':</h3>';
+        print '<ul class="search_quickhits">';
+        foreach ($data as $id => $title) {
+            print '<li> ';
+            if (useHeading('navigation')) {
+                $name = $title;
+            } else {
+                $ns = getNS($id);
+                if ($ns) {
+                    $name = shorten(noNS($id), ' (' . $ns . ')', 30);
+                } else {
+                    $name = $id;
+                }
+            }
+            print html_wikilink(':' . $id, $name);
+            print '</li> ';
+        }
+        print '</ul> ';
+        //clear float (see http://www.complexspiral.com/publications/containing-floats/)
+        print '<div class="clearer"></div>';
+        print '</div>';
+    }
+
+    //do fulltext search
+    $data = ft_pageSearch($query, $regex);
+    if (count($data)) {
+        $num = 1;
+        foreach ($data as $id => $cnt) {
+            print '<div class="search_result">';
+            print html_wikilink(':' . $id, useHeading('navigation') ? null : $id, $regex);
+            if ($cnt !== 0) {
+                print ': <span class="search_cnt">'.$cnt.' '.$lang['hits'].'</span><br />';
+                if ($num < FT_SNIPPET_NUMBER) { // create snippets for the first number of matches only
+                    print '<div class="search_snippet">' . ft_snippet($id, $regex) . '</div>';
+                }
+                $num++;
+            }
+            print '</div>';
+        }
+    } else {
+        print '<div class="nothing">'.$lang['nothingfound'].'</div>';
+    }
+
+    echo ob_get_clean();
 }
 

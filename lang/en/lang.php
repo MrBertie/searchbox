@@ -3,15 +3,19 @@
  * english language file
  */
 
-$lang['menu'] = 'Searchindex Manager';
+$lang['update'] = 'Update Index';
+$lang['update_tip'] = 'Click to update the search index of wiki pages for this namespace';
+$lang['placeholder'] = 'Search in -%s- namespace';
+$lang['clear'] = 'Clear';
 
 $lang['nojs']          = 'JavaScript needs to be enabled to run this plugin';
 
 $lang['js']['rebuild']  = 'Rebuild Index';
-$lang['js']['indexing'] = 'Now indexing:';
+$lang['js']['indexing'] = 'Indexed:';
 $lang['js']['done']     = 'Finished indexing.';
 $lang['js']['pages']    = '%d pages found.';
 $lang['js']['clearing'] = 'Clearing index...';
 $lang['js']['finding']  = 'Finding pages...';
+$lang['js']['notindexed'] = 'Up-to-date or Skipped';
 
 

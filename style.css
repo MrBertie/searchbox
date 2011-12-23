@@ -1,41 +1,65 @@
 div.dokuwiki .searchbox {
     position: relative;
     font-size:110%;
+    width:98%;
+}
+div.dokuwiki .searchbox .search {
+    position: relative;
+    height:32px;
     background:__background_alt__;
-    width:96%;
     padding:8px 8px 7px 9px;
-    margin:0 auto 3px;
+    margin:0 auto 1.5em;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    clear: both;
+}
+div.dokuwiki .searchbox .result {
+    width: auto;
+    background: white !important;
+    font-size:90%;
+}
+div.dokuwiki .searchbox .updating {
+    color: #A0A0A0;
+    border: 0px solid #D7D5D4;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
 }
-div.dokuwiki .searchbox .left,
-div.dokuwiki .searchbox .right {
-    height:32px;
+div.dokuwiki .searchbox .updating p {
+    margin-left: 2em;
 }
-div.dokuwiki .searchbox .left {
-    width:auto;
-    margin-right:120px;
+div.dokuwiki .searchbox .result .search_snippet {
+    font-size: 80%;
+    padding-left: 20px;
 }
-div.dokuwiki .searchbox .right {
-    float:right;
-}
-div.dokuwiki .searchbox .edit {
+div.dokuwiki .searchbox .query {
     height:24px;
     font-size: 95%;
-    width:100%;
+    width: 20em;
 	padding:2px 5px;
+    float: left;
 }
 div.dokuwiki .searchbox .button {
-    margin:0 3px 0 4px;
-    float:right;
+    margin:0 3px 0 8px;
+    float:left;
 }
-div.dokuwiki .searchbox a.update {
+div.dokuwiki .searchbox .search a.clear,
+div.dokuwiki .searchbox .search a.update {
     position: absolute;
-    top: -20px;
-    left: 10px;
+    bottom: -20px;
     color: #ABADB3;
     font-size: 75%;
     background: none;
     border: 0;
+}
+div.dokuwiki .searchbox .search a.clear {
+    left: 10px;
+}
+div.dokuwiki .searchbox .search a.update {
+    right: 10px;
+}
+div.dokuwiki .searchbox .search a:hover {
+    cursor: pointer;
+    color: black;
 }
