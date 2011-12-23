@@ -6,7 +6,7 @@
  *     Rewrite using jQuery and revealing module pattern
  */
 
-var plugin_searchbox = ( function() {
+var plugin_searchbox = (function() {
 
     // public methods/properties
     var pub = {};
@@ -32,7 +32,7 @@ var plugin_searchbox = ( function() {
         lang = LANG.plugins.searchbox;
         ns = encodeURI(jQuery('#plugin__searchbox_ns').val());
 
-        // init interface
+        // init interface events
         jQuery('#plugin__searchbox_update').click(pub.update);
         jQuery('#plugin__searchbox_clear').click(function() {
             jQuery('#plugin__searchbox_result').html("");
@@ -69,7 +69,7 @@ var plugin_searchbox = ( function() {
                 var ignored = '';
                 console.log(response);
                 if (response == 0) {
-                    // something went wrong, skip
+                    // either already indexed or something went wrong: skip
                     ignored = '----' + lang.notindexed;
                 }
                 // next page from queue
@@ -94,7 +94,7 @@ var plugin_searchbox = ( function() {
         }, 3000);
     };
     /**
-     * Cleans the index
+     * Cleans the index (ready for complete rebuild)
      */
     var clear = function() {
         status(lang.clearing);
@@ -126,6 +126,7 @@ var plugin_searchbox = ( function() {
                 // move the first page from the queue
                 page = pages.shift();
 
+                // complete index rebuild?
                 if (rebuild === true) clear();
 
                 // start indexing

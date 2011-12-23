@@ -51,8 +51,12 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
 		    $renderer->doc .=
                 '<div class="searchbox" id="plugin__searchbox">' .
                     '<div class="search">' .
-                        '<a class="update" id="plugin__searchbox_update" title="' . $this->getLang('update_tip') . '">'
-                        . $this->getLang('update') . '</a>' .
+                        '<div class="indexing">' .
+                            '<a class="rebuild" id="plugin__searchbox_rebuild" title="' . $this->getLang('rebuild_tip') . '">'
+                            . $this->getLang('rebuild') . '</a>' .
+                            '<a class="update" id="plugin__searchbox_update" title="' . $this->getLang('update_tip') . '">'
+                            . $this->getLang('update') . '</a>' .
+                        '</div>' .
                         '<input id="plugin__searchbox_qry" class="query" type="text"  maxlength="255 "' .
                         'tabindex="2" placeholder="' . $placeholder . '"/>' .
                         '<input id="plugin__searchbox_btn" class="button" type="button" tabindex="3" ' .
