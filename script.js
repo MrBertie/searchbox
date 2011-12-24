@@ -17,7 +17,8 @@ var plugin_searchbox = (function() {
         url =  null,
         done =  1,
         count = 0,
-        output = null,
+        $msg = null,
+        $query = null,
         ns = null,
         lang = null;
 
@@ -25,20 +26,24 @@ var plugin_searchbox = (function() {
      * initialize everything
      */
     pub.init = function() {
-        output = jQuery('#plugin__searchbox_msg');
-        if( ! output) return;
+        $msg= jQuery('#plugin__searchbox_msg');
+        if( ! $msg) return;
 
-        url = DOKU_BASE + 'lib/plugins/searchbox/ajax.php';
         lang = LANG.plugins.searchbox;
+        url = DOKU_BASE + 'lib/plugins/searchbox/ajax.php';
         ns = encodeURI(jQuery('#plugin__searchbox_ns').val());
+
+        $result = jQuery('#plugin__searchbox_result');
 
         // init interface events
         jQuery('#plugin__searchbox_update').click(pub.update);
+        jQuery('#plugin__searchbox_rebuild').click(pub.rebuild);
         jQuery('#plugin__searchbox_clear').click(function() {
-            jQuery('#plugin__searchbox_result').html("");
+            $result.html("");
         });
         jQuery('#plugin__searchbox_btn').click(search);
-        jQuery('#plugin__searchbox_qry').keyup(function(event) {
+        $query = jQuery('#plugin__searchbox_qry');
+        $query.keyup(function(event) {
             if (event.keyCode == 13) {
                 search();
             }
@@ -46,9 +51,8 @@ var plugin_searchbox = (function() {
     };
 
     var search = function() {
-        var query = jQuery('#plugin__searchbox_qry').val();
-        jQuery.post(url, 'call=search&query=' + encodeURI(query) + '&ns=' + ns, function(response) {
-            jQuery('#plugin__searchbox_result').html(response);
+        jQuery.post(url, 'call=search&query=' + encodeURI($query.val()) + '&ns=' + ns, function(response) {
+            $result.html(response);
         });
     };
 
@@ -56,7 +60,7 @@ var plugin_searchbox = (function() {
      * Gives textual feedback
      */
     var status = function(text) {
-        output.html('<p>' + text + '</p>');
+        $msg.html('<p>' + text + '</p>');
     };
 
     /**
@@ -99,8 +103,8 @@ var plugin_searchbox = (function() {
     var clear = function() {
         status(lang.clearing);
         jQuery.post(url, 'call=clearindex', function(response) {
-            if (response != 1) {
-                status(ok);
+            if (response !== 1) {
+                status(response);
                 // retry
                 window.setTimeout(clear,5000);
             }
@@ -141,20 +145,14 @@ var plugin_searchbox = (function() {
      * add a throbber image
      */
     var throbber_on = function() {
-        output
-            .css('background-image', "url('" + DOKU_BASE + 'lib/images/throbber.gif' + "')")
-            .css('background-repeat', 'no-repeat')
-            .css('background-position', '5px 4px')
-            .css({'border-width': '1px', 'padding': '3px'});
+        $msg.addClass('updating');
     };
 
     /**
      * Stop the throbber
      */
     var throbber_off = function() {
-        output
-            .css('background-image', 'none')
-            .css({'border-width': '0px', 'padding': '0px'});
+        $msg.removeClass('updating');
     };
 
     // return only public methods/properties

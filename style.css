@@ -20,14 +20,14 @@ div.dokuwiki .searchbox .result {
     background: white !important;
     font-size:90%;
 }
-div.dokuwiki .searchbox .updating {
+div.dokuwiki .searchbox .msg{
     color: #A0A0A0;
     border: 0px solid #D7D5D4;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
 }
-div.dokuwiki .searchbox .updating p {
+div.dokuwiki .searchbox .msg p {
     margin-left: 2em;
 }
 div.dokuwiki .searchbox .result .search_snippet {
@@ -45,7 +45,7 @@ div.dokuwiki .searchbox .button {
     margin:0 3px 0 8px;
     float:left;
 }
-div.dokuwiki .searchbox .indexing,
+div.dokuwiki .searchbox .reindex,
 div.dokuwiki .searchbox .search a.clear {
     top: -20px;
     position: absolute;
@@ -53,10 +53,13 @@ div.dokuwiki .searchbox .search a.clear {
 div.dokuwiki .searchbox .search a.clear {
     left: 10px;
 }
-div.dokuwiki .searchbox .indexing {
+div.dokuwiki .searchbox .reindex{
+    background-image: none;
+    border-width: 0;
+    padding: 0;
     right: 10px;
 }
-div.dokuwiki .searchbox .indexing a {
+div.dokuwiki .searchbox .reindex a {
     float: right;
     margin-left: 1.2em;
 }
@@ -69,4 +72,11 @@ div.dokuwiki .searchbox .search a {
 div.dokuwiki .searchbox .search a:hover {
     cursor: pointer;
     color: black;
+}
+div.dokuwiki .searchbox .updating {
+    background-image: url('../../images/throbber.gif');
+    background-repeat: no-repeat;
+    background-position: 5px 4px;
+    border-width: 1px;
+    padding: 3px;
 }

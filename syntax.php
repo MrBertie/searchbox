@@ -51,7 +51,7 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
 		    $renderer->doc .=
                 '<div class="searchbox" id="plugin__searchbox">' .
                     '<div class="search">' .
-                        '<div class="indexing">' .
+                        '<div class="reindex">' .
                             '<a class="rebuild" id="plugin__searchbox_rebuild" title="' . $this->getLang('rebuild_tip') . '">'
                             . $this->getLang('rebuild') . '</a>' .
                             '<a class="update" id="plugin__searchbox_update" title="' . $this->getLang('update_tip') . '">'
@@ -63,7 +63,7 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
                         'value="' . $opt['button'] . '"/>' .
                         '<a class="clear" id="plugin__searchbox_clear">' . $this->getLang('clear') . '</a>' .
                     '</div>' .
-                    '<div class="updating" id="plugin__searchbox_msg"></div>' .
+                    '<div class="msg" id="plugin__searchbox_msg"></div>' .
                     '<div class="result" id="plugin__searchbox_result"></div>' .
                     '<input id="plugin__searchbox_ns" type="hidden" value="' . $opt['ns'] . '"/>' .
                 '</div>';
