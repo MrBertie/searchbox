@@ -7,7 +7,7 @@ $lang['update'] = 'Update Index';
 $lang['update_tip'] = 'Click to update the search index of wiki pages for this namespace';
 $lang['rebuild'] = 'Rebuild Index';
 $lang['rebuild_tip'] = 'Click to COMPLETELY REBUILD the search index of wiki pages for this namespace';
-$lang['placeholder'] = 'Search in -%s- namespace';
+$lang['placeholder'] = 'Search in [ %s ]';
 $lang['clear'] = 'Clear';
 
 $lang['nojs']          = 'JavaScript needs to be enabled to run this plugin';

@@ -1,19 +1,18 @@
 div.dokuwiki .searchbox {
     position: relative;
-    font-size:110%;
+    font-size:100%;
     width:98%;
 }
 div.dokuwiki .searchbox .search {
     position: relative;
-    height:32px;
+    height:26px;
     background:__background_alt__;
-    padding:7px 8px;
-    margin:0 auto .5em;
+    padding:6px 7px;
+    margin:0 auto 1.5em;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     clear: both;
-    min-width: 430px;
 }
 div.dokuwiki .searchbox .result {
     width: auto;
@@ -35,19 +34,18 @@ div.dokuwiki .searchbox .result .search_snippet {
     padding-left: 20px;
 }
 div.dokuwiki .searchbox .query {
-    height:24px;
     font-size: 95%;
-    width: 20em;
+    max-width: 20em;
 	padding:2px 5px;
     float: left;
 }
 div.dokuwiki .searchbox .button {
-    margin:0 3px 0 8px;
+    margin:0 0 0 8px;
     float:left;
 }
 div.dokuwiki .searchbox .reindex,
 div.dokuwiki .searchbox .search a.clear {
-    top: -20px;
+    bottom: -16px;
     position: absolute;
 }
 div.dokuwiki .searchbox .search a.clear {
