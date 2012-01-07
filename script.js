@@ -26,33 +26,52 @@ var plugin_searchbox = (function() {
      * initialize everything
      */
     pub.init = function() {
-        $msg= jQuery('#plugin__searchbox_msg');
+        $msg = jQuery('#plugin__searchbox_msg');
         if( ! $msg) return;
 
         lang = LANG.plugins.searchbox;
         url = DOKU_BASE + 'lib/plugins/searchbox/ajax.php';
+        // can't use the JSINFO ns; this is a user-config'ed value'
         ns = encodeURI(jQuery('#plugin__searchbox_ns').val());
 
         $result = jQuery('#plugin__searchbox_result');
 
-        // init interface events
+        // if this was a page reload due to clicking a result link then refresh search result
+        var result = sessionStorage.getItem('result');
+        if (result !== undefined) {
+            $result.html(result);
+            sessionStorage.clear();
+        }
+
+        // reindexing interface
         jQuery('#plugin__searchbox_update').click(pub.update);
         jQuery('#plugin__searchbox_rebuild').click(pub.rebuild);
+
+        // searching interface
         jQuery('#plugin__searchbox_clear').click(function() {
-            $result.html("");
+            $result.removeClass('showresult').html("");
         });
         jQuery('#plugin__searchbox_btn').click(search);
         $query = jQuery('#plugin__searchbox_qry');
         $query.keyup(function(event) {
+            // allow for enter key when searching
             if (event.keyCode == 13) {
                 search();
             }
         });
+        // save the current search results ready for page reload
+        $result.delegate('a', 'click', function() {
+            sessionStorage.setItem('result', $result.html());
+        });
     };
 
     var search = function() {
+        throbber_on();
+        status(lang.searching);
         jQuery.post(url, 'call=search&query=' + encodeURI($query.val()) + '&ns=' + ns, function(response) {
-            $result.html(response);
+            status('');
+            throbber_off();
+            $result.addClass('showresult').html(response);
         });
     };
 
@@ -60,7 +79,10 @@ var plugin_searchbox = (function() {
      * Gives textual feedback
      */
     var status = function(text) {
-        $msg.html('<p>' + text + '</p>');
+        if (text.charAt(0) !== '<') {
+            text = '<p>' + text + '</p>'
+        }
+        $msg.html(text);
     };
 
     /**
@@ -70,17 +92,16 @@ var plugin_searchbox = (function() {
         if (page) {
             jQuery.post(url, 'call=indexpage&page=' + encodeURI(page), function(response) {
                 var wait = 250;
-                var ignored = '';
-                console.log(response);
+                var skipped = '';
                 if (response == 0) {
                     // either already indexed or something went wrong: skip
-                    ignored = '----' + lang.notindexed;
+                    skipped = '<p class="status">' + lang.notindexed + '</p>';
                 }
                 // next page from queue
                 page = pages.shift();
                 done++;
 
-                status(lang.indexing + '(' + done + '/' + count + ') <b>' + page + '</b>' + ignored);
+                status('<p>' + lang.indexing + ' ' + done + '/' + count + '</p><p class="name">' + page + '</p>' + skipped);
                 // next index run
                 window.setTimeout(index, wait);
             });
@@ -125,8 +146,8 @@ var plugin_searchbox = (function() {
             if (response != 1) {
                 pages = response.split("\n");
                 count = pages.length;
-                status(lang.pages.replace(/%d/, pages.length));
-
+                status(lang.pages.replace(/%d/, count));
+                debugger;
                 // move the first page from the queue
                 page = pages.shift();
 
@@ -134,7 +155,7 @@ var plugin_searchbox = (function() {
                 if (rebuild === true) clear();
 
                 // start indexing
-                window.setTimeout(index,1000);
+                window.setTimeout(index, 1000);
             } else {
                 finished();
             }

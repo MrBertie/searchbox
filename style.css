@@ -19,15 +19,34 @@ div.dokuwiki .searchbox .result {
     background: white !important;
     font-size:90%;
 }
-div.dokuwiki .searchbox .msg{
+div.dokuwiki .searchbox .showresult {
+    margin-bottom: 3em;
+    border: 1px dotted #D7D5D4;
+    border-width: 0 0 1px 0;
+}
+div.dokuwiki .searchbox .msg {
     color: #A0A0A0;
     border: 0px solid #D7D5D4;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+    overflow: hidden;
 }
 div.dokuwiki .searchbox .msg p {
-    margin-left: 2em;
+    margin-left: 24px;
+    margin-bottom: 4px !important;
+}
+div.dokuwiki .searchbox .msg p.status,
+div.dokuwiki .searchbox .msg p.name {
+    margin-left: 2.2em;
+    font-size: 75%;
+}
+div.dokuwiki .searchbox .msg p.name {
+    font-weight: bold;
+}
+div.dokuwiki .searchbox .msg p.status {
+    color: #D7D5D4;
+    font-style: italic;
 }
 div.dokuwiki .searchbox .result .search_snippet {
     font-size: 80%;
@@ -77,4 +96,13 @@ div.dokuwiki .searchbox .updating {
     background-position: 5px 4px;
     border-width: 1px;
     padding: 3px;
+}
+div.dokuwiki .searchbox  span.search_cnt {
+    display:inline;
+    font-weight:normal;
+    color:#B2B2B2;
+    margin-left:0.5em;
+    vertical-align:top;
+    font-size:80%;
+    line-height:130%;
 }

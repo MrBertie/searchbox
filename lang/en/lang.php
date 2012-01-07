@@ -17,6 +17,8 @@ $lang['js']['done']     = 'Finished indexing.';
 $lang['js']['pages']    = '%d pages found.';
 $lang['js']['clearing'] = 'Clearing index...';
 $lang['js']['finding']  = 'Finding pages...';
-$lang['js']['notindexed'] = 'Up-to-date or Skipped';
+$lang['js']['searching']  = 'Searching...';
+$lang['js']['notindexed']  = 'Skipped: Up-to-date';
+$lang['js']['indexed']     = 'Updated';
 
 

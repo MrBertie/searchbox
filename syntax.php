@@ -25,6 +25,7 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
         // default options
         $opt['ns'] = $INFO['namespace'];       // this namespace (default)
         $opt['button'] = $lang['btn_search'];  // button display name (default = Dokuwiki's)
+        $opt['reindex'] = false;               // hide re-indexing links
 
 		$match = substr($match, 12, -2);
 
@@ -37,6 +38,9 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
                 case 'ns':
                     $opt['ns'] = resolve_id($opt['ns'], $value);
                     break;
+                case 'reindex':
+                    $opt['reindex'] = true;
+                    break;
             }
         }
 		return $opt;
@@ -46,22 +50,27 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
 
 		$renderer->info['cache'] = false;
         $placeholder = sprintf($this->getLang('placeholder'), $opt['ns']);
+        $reindex = '';
 
 		if ($mode == 'xhtml') {
+            if ($opt['reindex']) {
+                $reindex =
+                    '<div class="reindex">' .
+                        '<a class="rebuild" id="plugin__searchbox_rebuild" title="' . $this->getLang('rebuild_tip') . '">'
+                        . $this->getLang('rebuild') . '</a>' .
+                        '<a class="update" id="plugin__searchbox_update" title="' . $this->getLang('update_tip') . '">'
+                        . $this->getLang('update') . '</a>' .
+                    '</div>';
+            }
 		    $renderer->doc .=
                 '<div class="searchbox" id="plugin__searchbox">' .
                     '<div class="search">' .
-                        '<div class="reindex">' .
-                            '<a class="rebuild" id="plugin__searchbox_rebuild" title="' . $this->getLang('rebuild_tip') . '">'
-                            . $this->getLang('rebuild') . '</a>' .
-                            '<a class="update" id="plugin__searchbox_update" title="' . $this->getLang('update_tip') . '">'
-                            . $this->getLang('update') . '</a>' .
-                        '</div>' .
                         '<input id="plugin__searchbox_qry" class="query" type="text"  maxlength="255 "' .
                         'tabindex="2" placeholder="' . $placeholder . '"/>' .
                         '<input id="plugin__searchbox_btn" class="button" type="button" tabindex="3" ' .
                         'value="' . $opt['button'] . '"/>' .
                         '<a class="clear" id="plugin__searchbox_clear">' . $this->getLang('clear') . '</a>' .
+                        $reindex .
                     '</div>' .
                     '<div class="msg" id="plugin__searchbox_msg"></div>' .
                     '<div class="result" id="plugin__searchbox_result"></div>' .

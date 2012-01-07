@@ -1,6 +1,6 @@
 <?php
 /**
- * AJAX call handler for nsindex plugin
+ * AJAX call handler for searchbox plugin
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Andreas Gohr <andi@splitbrain.org>
@@ -20,8 +20,7 @@ require_once(DOKU_INC.'inc/pageutils.php');
 require_once(DOKU_INC.'inc/auth.php');
 require_once(DOKU_INC.'inc/search.php');
 require_once(DOKU_INC.'inc/indexer.php');
-require_once(DOKU_INC . 'inc/html.php');
-require_once(DOKU_INC . 'inc/logger.php');
+
 //close sesseion
 session_write_close();
 
@@ -41,7 +40,7 @@ if (function_exists($call)) {
 }
 
 /**
- * Searches a given query within the specified query
+ * Searches for a given query within the specified namespace
  */
 function ajax_search() {
 
@@ -76,7 +75,7 @@ function ajax_pagelist() {
 
 /**
  * Clear all index files
- * NOTE: not used currently!
+ *
  */
 function ajax_clearindex() {
     global $conf;
@@ -183,8 +182,9 @@ function _html_search($query, $ns) {
             print '<div class="search_result">';
             print html_wikilink(':' . $id, useHeading('navigation') ? null : $id, $regex);
             if ($cnt !== 0) {
-                print ': <span class="search_cnt">'.$cnt.' '.$lang['hits'].'</span><br />';
-                if ($num < FT_SNIPPET_NUMBER) { // create snippets for the first number of matches only
+                print '<span class="search_cnt">' . $cnt . '</span><br />';  // use superscript freq count instead
+                // create snippets for the first number of matches only
+                if ($num < FT_SNIPPET_NUMBER) {
                     print '<div class="search_snippet">' . ft_snippet($id, $regex) . '</div>';
                 }
                 $num++;
