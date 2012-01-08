@@ -45,7 +45,6 @@ if (function_exists($call)) {
 function ajax_search() {
 
    if ( ! $_POST['query']) {
-        print 1;
         exit;
     }
 
@@ -60,13 +59,11 @@ function ajax_search() {
  */
 function ajax_pagelist() {
     global $conf;
+    $ns = '';
 
-   if ( ! $_POST['ns']) {
-        print 1;
-        exit;
-    }
+    if (isset($_POST['ns'])) $ns = $_POST['ns'];
     $data = array();
-    search($data, $conf['datadir'], 'search_allpages', array(), $_POST['ns']);
+    search($data, $conf['datadir'], 'search_allpages', array(), $ns);
 
     foreach($data as $val) {
         print $val['id'] . "\n";
@@ -112,29 +109,33 @@ function ajax_clearindex() {
     // we're finished
     @rmdir($lock);
 
-    print 1;
+    print 'true';
 }
 
 /**
  * Index the given page
  */
 function ajax_indexpage() {
+    $force = false;
 
     if ( ! $_POST['page']) {
-        print 1;
+        print 0;
         exit;
+    }
+    if (isset($_POST['force'])) {
+        $force = $_POST['force'] == 'true';
     }
 
     // keep running
     @ignore_user_abort(true);
 
     // no index lock checking, this is now done in idx_addPAge
-    // this plugin requires at least Augua release anyway!
+    // this plugin requires at least Augua release anyway due to jQuery!
 
     // index the page only if it has changed
-    $success = idx_addPage($_POST['page'], false, false);
+    $success = idx_addPage($_POST['page'], false, $force);
 
-    print ($success !== false) ? 1 : 0;
+    print ($success !== false) ? 'true' : '';
 }
 
 function _html_search($query, $ns) {

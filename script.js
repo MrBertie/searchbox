@@ -67,9 +67,9 @@ var plugin_searchbox = (function() {
 
     var search = function() {
         throbber_on();
-        status(lang.searching);
+        message(lang.searching);
         jQuery.post(url, 'call=search&query=' + encodeURI($query.val()) + '&ns=' + ns, function(response) {
-            status('');
+            message('');
             throbber_off();
             $result.addClass('showresult').html(response);
         });
@@ -78,7 +78,7 @@ var plugin_searchbox = (function() {
     /**
      * Gives textual feedback
      */
-    var status = function(text) {
+    var message = function(text) {
         if (text.charAt(0) !== '<') {
             text = '<p>' + text + '</p>'
         }
@@ -90,18 +90,15 @@ var plugin_searchbox = (function() {
      */
     var index = function() {
         if (page) {
-            jQuery.post(url, 'call=indexpage&page=' + encodeURI(page), function(response) {
+            jQuery.post(url, 'call=indexpage&page=' + encodeURI(page) + '&force=' + force, function(response) {
                 var wait = 250;
-                var skipped = '';
-                if (response == 0) {
-                    // either already indexed or something went wrong: skip
-                    skipped = '<p class="status">' + lang.notindexed + '</p>';
-                }
                 // next page from queue
                 page = pages.shift();
                 done++;
 
-                status('<p>' + lang.indexing + ' ' + done + '/' + count + '</p><p class="name">' + page + '</p>' + skipped);
+                var msg = (response !== 'true') ? lang.notindexed : lang.indexed;
+                status = '<p class="status">' + msg + '</p>';
+                message('<p>' + lang.indexing + ' ' + done + '/' + count + '</p><p class="name">' + page + '</p>' + status);
                 // next index run
                 window.setTimeout(index, wait);
             });
@@ -113,21 +110,25 @@ var plugin_searchbox = (function() {
     var finished = function() {
         // we're done
         throbber_off();
-        status(lang.done);
+        message(lang.done);
         window.setTimeout(function() {
-            status('');
+            message('');
         }, 3000);
     };
     /**
      * Cleans the index (ready for complete rebuild)
      */
     var clear = function() {
-        status(lang.clearing);
+        message(lang.clearing);
         jQuery.post(url, 'call=clearindex', function(response) {
-            if (response !== 1) {
-                status(response);
+            if (response !== 'true') {
+                message(response);
                 // retry
                 window.setTimeout(clear,5000);
+            } else {
+                // start indexing
+                force = 'true'; // force reindexing even if up-to-date
+                window.setTimeout(index,1000);
             }
         });
     };
@@ -139,23 +140,27 @@ var plugin_searchbox = (function() {
      * Starts the index update
      */
     pub.update = function(rebuild) {
+        done = 1;   // reset here in case of multiple use without reloading
         rebuild = rebuild || false;
         throbber_on();
-        status(lang.finding);
+        message(lang.finding);
         jQuery.post(url, 'call=pagelist&ns=' + ns, function(response) {
-            if (response != 1) {
+            if (response !== 'true') {
                 pages = response.split("\n");
                 count = pages.length;
-                status(lang.pages.replace(/%d/, count));
-                debugger;
+                message(lang.pages.replace(/%d/, pages.length));
+
                 // move the first page from the queue
                 page = pages.shift();
 
                 // complete index rebuild?
-                if (rebuild === true) clear();
-
-                // start indexing
-                window.setTimeout(index, 1000);
+                if (rebuild === true) {
+                    clear();
+                } else {
+                    force = '';
+                    // just start indexing immediately
+                    window.setTimeout(index,1000);
+                }
             } else {
                 finished();
             }
