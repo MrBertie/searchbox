@@ -25,7 +25,7 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
         // default options
         $opt['ns'] = $INFO['namespace'];       // this namespace (default)
         $opt['button'] = $lang['btn_search'];  // button display name (default = Dokuwiki's)
-        $opt['reindex'] = false;               // hide re-indexing links
+        $opt['reindex'] = false;               // show re-indexing links
 
 		$match = substr($match, 12, -2);
 

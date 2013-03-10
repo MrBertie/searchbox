@@ -1,9 +1,11 @@
 /**
- * Javascript for searchindex manager plugin
+ * Javascript for searchboxplugin
  *
+ * Based on searchindex by:
  * @author Andreas Gohr <andi@splitbrain.org>
+ *
  * @author Symon Bent <hendrybadao@gmail.com>
- *     Rewrite using jQuery and revealing module pattern
+ *
  */
 
 var plugin_searchbox = (function() {
@@ -80,7 +82,7 @@ var plugin_searchbox = (function() {
      */
     var message = function(text) {
         if (text.charAt(0) !== '<') {
-            text = '<p>' + text + '</p>'
+            text = '<p>' + text + '</p>';
         }
         $msg.html(text);
     };
