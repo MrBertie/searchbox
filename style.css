@@ -4,16 +4,35 @@ div.dokuwiki .searchbox {
     width:98%;
 }
 div.dokuwiki .searchbox .search {
-    position: relative;
-    height:26px;
     background:__background_alt__;
-    padding:6px 7px;
-    margin:0 auto 1.5em;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     clear: both;
+    height:26px;
+    margin:0 auto 1.5em;
+    padding:8px 118px 7px 9px;
+    position: relative;
+    width:auto;
 }
+div.dokuwiki .searchbox .query {
+    display: block;
+    float: left;
+    font-size: 95%;
+    height: 21px;
+	padding: 2px 5px;
+    position: relative;
+    width: 100%;
+}
+div.dokuwiki .searchbox .button {
+    margin: 0 8px;
+    padding: 2px 5px;
+    position: absolute;
+    right: 0;
+    width: 90px;
+}
+
+
 div.dokuwiki .searchbox .result {
     width: auto;
     background: white !important;
@@ -51,16 +70,6 @@ div.dokuwiki .searchbox .msg p.status {
 div.dokuwiki .searchbox .result .search_snippet {
     font-size: 80%;
     padding-left: 20px;
-}
-div.dokuwiki .searchbox .query {
-    font-size: 95%;
-    max-width: 20em;
-	padding:2px 5px;
-    float: left;
-}
-div.dokuwiki .searchbox .button {
-    margin:0 0 0 8px;
-    float:left;
 }
 div.dokuwiki .searchbox .reindex,
 div.dokuwiki .searchbox .search a.clear {
