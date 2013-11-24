@@ -5,25 +5,25 @@ require_once(DOKU_PLUGIN . 'syntax.php');
 
 class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
 
-    function getType(){
+    function getType() {
         return 'substition';
     }
 
-    function getSort(){
+    function getSort() {
         return 105;
     }
 
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('{{searchbox.*?}}', $mode, 'plugin_searchbox');
+        $this->Lexer->addSpecialPattern('{{searchbox>.*?}}', $mode, 'plugin_searchbox');
     }
 
     function handle($match, $state, $pos, &$handler) {
-        global $INFO, $lang;
+        global $lang;
 
         $opt = array();
 
         // default options
-        $opt['ns'] = $INFO['namespace'];       // this namespace (default)
+        $opt['ns'] = '';
         $opt['button'] = $lang['btn_search'];  // button display name (default = Dokuwiki's)
         $opt['reindex'] = false;               // show re-indexing links
 
@@ -35,24 +35,28 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
             switch ($key) {
                 case 'button':
                     $opt['button'] = $value;
+                    break;
                 case 'ns':
-                    $opt['ns'] = resolve_id($opt['ns'], $value);
+                    $opt['ns'] = $value;
                     break;
                 case 'reindex':
                     $opt['reindex'] = true;
                     break;
             }
         }
-		return $opt;
+        return $opt;
     }
 
-	function render($mode, &$renderer, $opt) {
 
-		$renderer->info['cache'] = false;
-        $placeholder = sprintf($this->getLang('placeholder'), $opt['ns']);
+    function render($mode, &$renderer, $opt) {
+        global $INFO;
+
+        $ns = (empty($opt['ns'])) ? $INFO['namespace'] : resolve_id($INFO['namespace'], $opt['ns']);
+        $renderer->info['cache'] = false;
+        $placeholder = sprintf($this->getLang('placeholder'), $ns);
         $reindex = '';
 
-		if ($mode == 'xhtml') {
+        if ($mode == 'xhtml') {
             if ($opt['reindex']) {
                 $reindex =
                     '<div class="reindex">' .
@@ -62,7 +66,7 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
                         . $this->getLang('update') . '</a>' .
                     '</div>';
             }
-		    $renderer->doc .=
+            $renderer->doc .=
                 '<div class="searchbox" id="plugin__searchbox">' .
                     '<div class="search">' .
                         '<input id="plugin__searchbox_qry" class="query" type="text"  maxlength="255 "' .
@@ -74,10 +78,10 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
                     '</div>' .
                     '<div class="msg" id="plugin__searchbox_msg"></div>' .
                     '<div class="result" id="plugin__searchbox_result"></div>' .
-                    '<input id="plugin__searchbox_ns" type="hidden" value="' . $opt['ns'] . '"/>' .
+                    '<input id="plugin__searchbox_ns" type="hidden" value="' . $ns . '"/>' .
                 '</div>';
-			return true;
-		}
-		return false;
-	}
+            return true;
+        }
+        return false;
+    }
 }

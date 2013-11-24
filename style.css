@@ -115,3 +115,13 @@ div.dokuwiki .searchbox  span.search_cnt {
     font-size:80%;
     line-height:130%;
 }
+
+div.dokuwiki .searchbox .search_quickresult ul li {
+    width: 90%;
+    margin: 0 0.7em;
+}
+
+div.dokuwiki .searchbox .search_snippet {
+    margin: 0.3em 1.5em 0 !important;
+    padding: 0 !important;
+}

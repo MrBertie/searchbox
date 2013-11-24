@@ -12,8 +12,12 @@ if ( ! count($_POST) && $HTTP_RAW_POST_DATA) {
   parse_str($HTTP_RAW_POST_DATA, $_POST);
 }
 
-if ( ! defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__) . '/../../../') . '/');
-if ( ! defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC . 'lib/plugins/');
+if ( ! defined('DOKU_INC')) {
+    define('DOKU_INC',realpath(dirname(__FILE__) . '/../../../') . '/');
+}
+if ( ! defined('DOKU_PLUGIN')) {
+    define('DOKU_PLUGIN',DOKU_INC . 'lib/plugins/');
+}
 require_once(DOKU_INC.'inc/init.php');
 require_once(DOKU_INC.'inc/common.php');
 require_once(DOKU_INC.'inc/pageutils.php');
@@ -43,12 +47,9 @@ if (function_exists($call)) {
  * Searches for a given query within the specified namespace
  */
 function ajax_search() {
-
-   if ( ! $_POST['query']) {
-        exit;
+   if ( ! empty($_POST['query'])) {
+        _html_search($_POST['query'], $_POST['ns']);
     }
-
-    _html_search($_POST['query'], $_POST['ns']);
 }
 
 /**
@@ -61,7 +62,9 @@ function ajax_pagelist() {
     global $conf;
     $ns = '';
 
-    if (isset($_POST['ns'])) $ns = $_POST['ns'];
+    if (isset($_POST['ns'])) {
+        $ns = $_POST['ns'];
+    }
     $data = array();
     search($data, $conf['datadir'], 'search_allpages', array(), $ns);
 
@@ -112,6 +115,7 @@ function ajax_clearindex() {
     print 'true';
 }
 
+
 /**
  * Index the given page
  */
@@ -138,11 +142,11 @@ function ajax_indexpage() {
     print ($success !== false) ? 'true' : '';
 }
 
+
 function _html_search($query, $ns) {
     global $lang;
 
     //do quick pagesearch
-    $data = array();
     if ( ! empty($ns)) {
         $query = $query . ' @' . $ns;
     }
@@ -156,32 +160,25 @@ function _html_search($query, $ns) {
         print '<ul class="search_quickhits">';
         foreach ($data as $id => $title) {
             print '<li> ';
-            if (useHeading('navigation')) {
-                $name = $title;
-            } else {
-                $ns = getNS($id);
-                if ($ns) {
-                    $name = shorten(noNS($id), ' (' . $ns . ')', 30);
-                } else {
-                    $name = $id;
-                }
-            }
-            print html_wikilink(':' . $id, $name);
+            $name = (useHeading('navigation')) ? $title : $id;
+            $title = html_wikilink(':' . $id, $name);
+            print id_proper($title);
             print '</li> ';
         }
         print '</ul> ';
-        //clear float (see http://www.complexspiral.com/publications/containing-floats/)
+        // clear float (see http://www.complexspiral.com/publications/containing-floats/)
         print '<div class="clearer"></div>';
         print '</div>';
     }
 
-    //do fulltext search
+    // do fulltext search
     $data = ft_pageSearch($query, $regex);
     if (count($data)) {
         $num = 1;
         foreach ($data as $id => $cnt) {
             print '<div class="search_result">';
-            print html_wikilink(':' . $id, useHeading('navigation') ? null : $id, $regex);
+            $title =  html_wikilink(':' . $id, useHeading('navigation') ? null : $id, $regex);
+            print id_proper($title);
             if ($cnt !== 0) {
                 print '<span class="search_cnt">' . $cnt . '</span><br />';  // use superscript freq count instead
                 // create snippets for the first number of matches only
@@ -197,5 +194,19 @@ function _html_search($query, $ns) {
     }
 
     echo ob_get_clean();
+}
+
+
+/**
+ * Changes a wiki page id into proper case (allowing for :'s etc...)
+ * @param string    $id    page id
+ * @return string
+ */
+function id_proper($id) {
+    $id = str_replace(':', ' : ', $id); // make a little whitespace before words so ucwords can work!
+    $id = str_replace('_', ' ', $id);
+    $id = ucwords($id);
+    //$id = str_replace(': ', ':', $id);
+    return $id;
 }
 

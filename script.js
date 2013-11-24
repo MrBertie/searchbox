@@ -3,7 +3,6 @@
  *
  * Based on searchindex by:
  * @author Andreas Gohr <andi@splitbrain.org>
- *
  * @author Symon Bent <hendrybadao@gmail.com>
  *
  */
@@ -21,24 +20,27 @@ var plugin_searchbox = (function() {
         count = 0,
         $msg = null,
         $query = null,
+        $result = null,
         ns = null,
         lang = null;
+
 
     /**
      * initialize everything
      */
     pub.init = function() {
         $msg = jQuery('#plugin__searchbox_msg');
-        if( ! $msg) return;
+        if ( ! $msg) return;
 
         lang = LANG.plugins.searchbox;
         url = DOKU_BASE + 'lib/plugins/searchbox/ajax.php';
-        // can't use the JSINFO ns; this is a user-config'ed value'
+        // can't use the JSINFO ns; this is a dynamic value'
         ns = encodeURI(jQuery('#plugin__searchbox_ns').val());
 
         $result = jQuery('#plugin__searchbox_result');
+        $query = jQuery('#plugin__searchbox_qry');
 
-        // if this was a page reload due to clicking a result link then refresh search result
+        // if this was a page reload due to clicking a result link then refresh search results
         var result = sessionStorage.getItem('result');
         if (result !== undefined) {
             $result.html(result);
@@ -46,26 +48,30 @@ var plugin_searchbox = (function() {
         }
 
         // reindexing interface
-        jQuery('#plugin__searchbox_update').click(pub.update);
-        jQuery('#plugin__searchbox_rebuild').click(pub.rebuild);
+        jQuery('#plugin__searchbox_update').on('click', pub.update);
+        jQuery('#plugin__searchbox_rebuild').on('click', pub.rebuild);
 
         // searching interface
-        jQuery('#plugin__searchbox_clear').click(function() {
+        jQuery('#plugin__searchbox_clear').on('click', function() {
             $result.removeClass('showresult').html("");
+            $query.val('').focus();
         });
-        jQuery('#plugin__searchbox_btn').click(search);
-        $query = jQuery('#plugin__searchbox_qry');
-        $query.keyup(function(event) {
+
+        jQuery('#plugin__searchbox_btn').on('click', search);
+
+        $query.on('keyup', function(event) {
             // allow for enter key when searching
-            if (event.keyCode == 13) {
+            if (event.keyCode === 13) {
                 search();
             }
         });
-        // save the current search results ready for page reload
-        $result.delegate('a', 'click', function() {
+
+        // save the current search results ready for refresh on page reload
+        $result.on('a', 'click', function() {
             sessionStorage.setItem('result', $result.html());
         });
     };
+
 
     var search = function() {
         throbber_on();
