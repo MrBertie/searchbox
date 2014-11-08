@@ -1,7 +1,9 @@
 <?php
+
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__) . '/../../') . '/');
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
 require_once(DOKU_PLUGIN . 'syntax.php');
+
 
 class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
 
@@ -16,6 +18,7 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('{{searchbox>.*?}}', $mode, 'plugin_searchbox');
     }
+
 
     function handle($match, $state, $pos, &$handler) {
         global $lang;
@@ -51,8 +54,8 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
     function render($mode, &$renderer, $opt) {
         global $INFO;
 
-        $ns = (empty($opt['ns'])) ? $INFO['namespace'] : resolve_id($INFO['namespace'], $opt['ns']);
         $renderer->info['cache'] = false;
+        $ns = (empty($opt['ns'])) ? $INFO['namespace'] : resolve_id($INFO['namespace'], $opt['ns']);
         $placeholder = sprintf($this->getLang('placeholder'), $ns);
         $reindex = '';
 
@@ -79,7 +82,8 @@ class syntax_plugin_searchbox extends DokuWiki_Syntax_Plugin {
                     '<div class="msg" id="plugin__searchbox_msg"></div>' .
                     '<div class="result" id="plugin__searchbox_result"></div>' .
                     '<input id="plugin__searchbox_ns" type="hidden" value="' . $ns . '"/>' .
-                '</div>';
+                '</div>' .
+                '<div class="clearer"></div>';
             return true;
         }
         return false;

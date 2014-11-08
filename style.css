@@ -4,28 +4,25 @@ div.dokuwiki .searchbox {
     width:98%;
 }
 div.dokuwiki .searchbox .search {
-    background:__background_alt__;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     clear: both;
     height:26px;
     margin:0 auto 1.5em;
-    padding:8px 118px 7px 9px;
+    padding:3px 114px 3px 0;
     position: relative;
     width:auto;
 }
 div.dokuwiki .searchbox .query {
     display: block;
     float: left;
-    font-size: 95%;
-    height: 21px;
+    font-size: 90%;
+    height: 22px;
 	padding: 2px 5px;
     position: relative;
     width: 100%;
 }
 div.dokuwiki .searchbox .button {
-    margin: 0 8px;
+    height: 28px;
+    margin: 0 4px 0 8px;
     padding: 2px 5px;
     position: absolute;
     right: 0;

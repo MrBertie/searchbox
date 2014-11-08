@@ -7,10 +7,6 @@
  * @author     Symon Bent <hendrybadao@gmail.com>
  */
 
-//fix for Opera XMLHttpRequests
-if ( ! count($_POST) && $HTTP_RAW_POST_DATA) {
-  parse_str($HTTP_RAW_POST_DATA, $_POST);
-}
 
 if ( ! defined('DOKU_INC')) {
     define('DOKU_INC',realpath(dirname(__FILE__) . '/../../../') . '/');
@@ -25,8 +21,10 @@ require_once(DOKU_INC.'inc/auth.php');
 require_once(DOKU_INC.'inc/search.php');
 require_once(DOKU_INC.'inc/indexer.php');
 
-//close sesseion
+
+//close session
 session_write_close();
+
 
 header('Content-Type: text/plain; charset=utf-8');
 
@@ -43,6 +41,7 @@ if (function_exists($call)) {
     print "The called function '" . htmlspecialchars($call). "' does not exist!";
 }
 
+
 /**
  * Searches for a given query within the specified namespace
  */
@@ -51,6 +50,7 @@ function ajax_search() {
         _html_search($_POST['query'], $_POST['ns']);
     }
 }
+
 
 /**
  * Lists all page names within a given namespace only
@@ -72,6 +72,7 @@ function ajax_pagelist() {
         print $val['id'] . "\n";
     }
 }
+
 
 /**
  * Clear all index files
@@ -139,14 +140,14 @@ function ajax_indexpage() {
     // index the page only if it has changed
     $success = idx_addPage($_POST['page'], false, $force);
 
-    print ($success !== false) ? 'true' : '';
+    print (($success !== false) ? 'true' : '');
 }
 
 
-function _html_search($query, $ns) {
+function _html_search($query, $ns, $proper = false) {
     global $lang;
 
-    //do quick pagesearch
+    //do quick page search
     if ( ! empty($ns)) {
         $query = $query . ' @' . $ns;
     }
